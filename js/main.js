@@ -11,6 +11,7 @@ const closureStartDateEl = document.getElementById('closure-start');
 const closureEstimatedEndDateEl = document.getElementById(
   'closure-estimated-end'
 );
+const scrollTopButton = document.getElementById("scroll-top-button")
 
 /////////////////
 // Set up map //
@@ -225,6 +226,14 @@ resetButton.addEventListener('click', () => {
   outputJSONEl.textContent = '';
   clippedResultSingleFeature = undefined;
 });
+
+// FUNCTIONALITY: Back to top
+scrollTopButton.addEventListener("click", () => {
+  document.getElementsByClassName("sidebar")[0].scrollTo({
+    top: 0,
+    behavior: "smooth"
+  })
+})
 
 // FUNCTIONALITY: Clip Features
 const outputJSONEl = document.getElementById('output-json');

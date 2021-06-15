@@ -104,4 +104,11 @@ body {
     width: 100vw;
     height: 100vh;
   }
+  #page-title-section {
+    position: fixed;
+    width: 100%;
+  }
+  #authentication-section {
+    margin-top: 6rem;
+  }
 }
