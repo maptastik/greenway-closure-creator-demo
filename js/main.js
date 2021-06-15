@@ -146,22 +146,20 @@ layerControl.addOverlay(
 );
 
 // Mile markers
-const mileMarkersLayer = L.esri
-  .featureLayer({
-    url:
-      'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Greenway_Quarter_Mile_Markers/FeatureServer/0',
-    pane: 'mileMarkers',
-    pointToLayer: function(feature, latlng) {
-      return L.marker(latlng, {
-        icon: L.divIcon({
-          iconSize: null,
-          className: 'label',
-          html: '<div">' + feature.properties.MARKERMILE + '</div>'
-        })
-      });
-    }
-  })
-  .addTo(map);
+const mileMarkersLayer = L.esri.featureLayer({
+  url:
+    'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Greenway_Quarter_Mile_Markers/FeatureServer/0',
+  pane: 'mileMarkers',
+  pointToLayer: function(feature, latlng) {
+    return L.marker(latlng, {
+      icon: L.divIcon({
+        iconSize: null,
+        className: 'label',
+        html: '<div">' + feature.properties.MARKERMILE + '</div>'
+      })
+    });
+  }
+});
 
 layerControl.addOverlay(mileMarkersLayer, 'Greenway Mile Markers');
 
