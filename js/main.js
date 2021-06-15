@@ -68,7 +68,8 @@ document.getElementById('signOutButton').addEventListener('click', event => {
 
 const map = L.map('map', {
   center: [35.798532, -78.644599],
-  zoom: 12
+  zoom: 12,
+  renderer: L.canvas({tolerance: 15})
 });
 
 // LEAFLET MAP CONTROLS
@@ -76,7 +77,7 @@ const map = L.map('map', {
 const layerControl = L.control
   .layers(null, null, {
     position: 'bottomleft',
-    collapsed: false,
+    collapsed: true,
     sortLayers: true
   })
   .addTo(map);
@@ -138,7 +139,8 @@ const ongoingClosuresLayer = L.esri.featureLayer({
   url:
     'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Greenway_Closures_Creator_Demo_Ongoing_Closures_View/FeatureServer/0',
   style: ongoingClosuresStyle,
-  pane: 'ongoingClosures'
+  pane: 'ongoingClosures',
+  onEachFeature: allNonNullFieldsPopup
 });
 ongoingClosuresLayer.addTo(map);
 layerControl.addOverlay(
@@ -380,4 +382,15 @@ function handleAdded(response) {
     // stop early if adding a new feature was not successful
     return;
   }
+}
+
+function allNonNullFieldsPopup(feature, layer) {
+  let featureProperties = feature.properties;
+  let popupHtml = "";
+  for (let property in featureProperties) {
+    if (featureProperties[property] !== null) {
+      popupHtml += `<b>${property}:</b> ${featureProperties[property]}<br>`;
+    }
+  }
+  layer.bindPopup(popupHtml);
 }

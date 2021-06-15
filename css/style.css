@@ -111,4 +111,9 @@ body {
   #authentication-section {
     margin-top: 6rem;
   }
+  .leaflet-popup-content {
+    width: 50vw;
+    max-height: 140px;
+    overflow: auto;
+  }
 }
