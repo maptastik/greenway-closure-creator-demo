@@ -18,7 +18,7 @@ const closureEstimatedEndDateEl = document.getElementById(
 
 let session = null;
 const clientId = '2sTSmcY1sy7bTbRt';
-const redirectUri = window.location.origin + '/authenticate.html';
+const redirectUri = window.location.href + '/authenticate.html';
 
 const serializedSession = localStorage.getItem('__ARCGIS_REST_USER_SESSION__');
 if (serializedSession !== null && serializedSession !== undefined) {
@@ -193,7 +193,6 @@ const drawControl = new L.Control.Draw({
   position: 'topright'
 });
 map.addControl(drawControl);
-
 
 // Draw Events
 map.on(L.Draw.Event.CREATED, e => {
