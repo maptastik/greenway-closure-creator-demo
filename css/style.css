@@ -18,9 +18,45 @@ body {
 .grid-container {
   display: grid;
   grid-template-columns: 60% 40%;
-  grid-template-rows: 100vh;
+  grid-template-rows: 60px auto;
   gap: 0px 0px;
-  grid-template-areas: 'map sidebar';
+  grid-template-areas: 
+    "header header"
+    "map sidebar";
+}
+
+#header {
+  background-color: var(--main-bg-color);
+  color: var(--main-text-color);
+  margin: 0;
+  padding-left: 2px;
+  padding: 0.25rem;
+  letter-spacing: 0.05rem;
+  grid-area: header;
+  display: grid;
+  grid-template-areas: "title auth";
+  grid-template-columns: 65% 35%;
+}
+
+#header > div {
+  display: flex;
+}
+
+#title-container {
+  grid-area: title;
+  justify-content: flex-start;
+  align-items: center;
+}
+#title-text {
+  font-size: 1rem;
+  margin: 0;
+  padding: 0;
+}
+#auth-container {
+  grid-area: auth;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 0.5rem;
 }
 
 .map {
@@ -46,15 +82,6 @@ body {
 
 .sidebar > section {
   margin: 0 10px;
-}
-
-#page-title-section {
-  background-color: var(--main-bg-color);
-  color: var(--main-text-color);
-  margin: 0;
-  padding-left: 2px;
-  padding: 0.25rem;
-  letter-spacing: 0.05rem;
 }
 
 #attribute-form ul {
@@ -96,21 +123,23 @@ body {
 @media only screen and (max-width: 600px) {
   .grid-container {
     display: grid;
-    grid-template-rows: 35% auto;
+    grid-template-rows: 40px 35% auto;
     grid-template-columns: auto;
     grid-template-areas:
-      'map'
-      'sidebar';
+      "header"
+      "map"
+      "sidebar";
     width: 100vw;
     height: 100vh;
   }
-  #page-title-section {
+  /* #header {
     position: fixed;
     width: 100%;
+  } */
+  #header > #title-container > h1 {
+    font-size: 0.75rem;
   }
-  #authentication-section {
-    margin-top: 6rem;
-  }
+
   .leaflet-popup-content {
     width: 50vw;
     max-height: 140px;
