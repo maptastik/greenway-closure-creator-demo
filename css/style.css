@@ -17,6 +17,8 @@ body {
 }
 .grid-container {
   display: grid;
+  height: 100vh;
+  width: 100vw;
   grid-template-columns: 60% 40%;
   grid-template-rows: 60px auto;
   gap: 0px 0px;
@@ -129,13 +131,8 @@ body {
       "header"
       "map"
       "sidebar";
-    width: 100vw;
-    height: 100vh;
   }
-  /* #header {
-    position: fixed;
-    width: 100%;
-  } */
+
   #header > #title-container > h1 {
     font-size: 0.75rem;
   }
