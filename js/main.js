@@ -11,7 +11,6 @@ const closureStartDateEl = document.getElementById('closure-start');
 const closureEstimatedEndDateEl = document.getElementById(
   'closure-estimated-end'
 );
-const scrollTopButton = document.getElementById("scroll-top-button")
 
 /////////////////
 // Set up map //
@@ -118,7 +117,6 @@ fetch(
 
 // Ongoing Greenway Closures
 function ongoingClosuresStyle(feature) {
-  console.log(feature.properties.gwstatus);
   let color;
   switch (feature.properties.gwstatus) {
     case 'CLOSED_STORM':
@@ -140,7 +138,7 @@ const ongoingClosuresLayer = L.esri.featureLayer({
     'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Greenway_Closures_Creator_Demo_Ongoing_Closures_View/FeatureServer/0',
   style: ongoingClosuresStyle,
   pane: 'ongoingClosures',
-  onEachFeature: allNonNullFieldsPopup
+  onEachFeature: closurePopup
 });
 ongoingClosuresLayer.addTo(map);
 layerControl.addOverlay(
@@ -196,8 +194,13 @@ const drawControl = new L.Control.Draw({
 map.addControl(drawControl);
 
 // Draw Events
-map.on(L.Draw.Event.CREATED, e => {
-  let type = e.layerType;
+
+map.on(L.Draw.Event.DRAWSTART, e => {
+  drawnItems.clearLayers()
+  clippedResultLayer.clearLayers()
+})
+
+map.on(L.Draw.Event.CREATED, e => {  
   let layer = e.layer;
   layer.setStyle({
     color: '#121212',
@@ -209,36 +212,14 @@ map.on(L.Draw.Event.CREATED, e => {
 map.on(L.Draw.Event.DELETED, e => {
   clippedResultLayer.clearLayers();
   drawnItems.clearLayers();
-  outputJSONEl.textContent = '';
+  // outputJSONEl.textContent = '';
 });
 
 // Clip result
 const clippedResultLayer = new L.FeatureGroup();
 map.addLayer(clippedResultLayer);
 
-// FUNCTIONALITY: Reset App
-const resetButton = document.getElementById('reset-button');
-resetButton.addEventListener('click', () => {
-  drawnItems.clearLayers();
-  clippedResultLayer.clearLayers();
-  closureTitleEl.value = null;
-  closureDescriptionEl.value = null;
-  closureStartDateEl.value = null;
-  closureEstimatedEndDateEl.value = null;
-  outputJSONEl.textContent = '';
-  clippedResultSingleFeature = undefined;
-});
-
-// FUNCTIONALITY: Back to top
-scrollTopButton.addEventListener("click", () => {
-  document.getElementsByClassName("sidebar")[0].scrollTo({
-    top: 0,
-    behavior: "smooth"
-  })
-})
-
 // FUNCTIONALITY: Clip Features
-const outputJSONEl = document.getElementById('output-json');
 const clipButton = document.getElementById('clip-button');
 let clippedResultSingleFeature;
 clipButton.addEventListener('click', () => {
@@ -267,23 +248,24 @@ clipButton.addEventListener('click', () => {
     }
   });
   clippedResultLayer.addLayer(clippedResultSingleFeatureLayer);
-  outputJSONEl.textContent = JSON.stringify(
-    Terraformer.geojsonToArcGIS(clippedResultSingleFeature),
-    null,
-    2
-  );
+  map.fitBounds(clippedResultLayer.getBounds())
 });
 
-// FUNCTIONALITY: Apply attributes to clipped feature
 
-applyAttributesButton.addEventListener('click', () => {
+// FUNCTIONALITY: Add Closure to data
+const greenwayClosuresServiceLayerUrl =
+  'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/greenway_closures_creator_demo_layer/FeatureServer/0';
+const addClosureButton = document.getElementById('add-closure-button');
+addClosureButton.addEventListener('click', () => {
   let closureTitle = closureTitleEl.value;
   let selectedClosureStatus = getCheckedRadioValue(closureSelectorInputs);
   let closureDescription = closureDescriptionEl.value;
   let closureStartDate = closureStartDateEl.value;
   let closureEstimatedEndDate = closureEstimatedEndDateEl.value;
+  console.log(clippedResultSingleFeature)
 
   try {
+    dateRangeTest(Date.parse(closureStartDate), Date.parse(closureEstimatedEndDate))
     clippedResultSingleFeature.features.forEach(feature => {
       feature.properties['closure_title'] = closureTitle;
       feature.properties['gwstatus'] = selectedClosureStatus;
@@ -293,23 +275,12 @@ applyAttributesButton.addEventListener('click', () => {
         'closure_estimated_end_date'
       ] = closureEstimatedEndDate;
     });
-    outputJSONEl.textContent = JSON.stringify(
-      Terraformer.geojsonToArcGIS(clippedResultSingleFeature),
-      null,
-      2
-    );
   } catch (error) {
     console.log(error);
     console.log('No clip has been set yet');
   }
-});
 
-// FUNCTIONALITY: Add Closure to data
-const greenwayClosuresServiceLayerUrl =
-  'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/greenway_closures_creator_demo_layer/FeatureServer/0';
-const addClosureButton = document.getElementById('add-closure-button');
-addClosureButton.addEventListener('click', () => {
-  console.log('submit closure');
+
   let featureToAdd = Terraformer.geojsonToArcGIS(clippedResultSingleFeature);
   arcgisRest
     .addFeatures({
@@ -372,16 +343,73 @@ function getCheckedRadioValue(selectors) {
 
 function handleAdded(response) {
   console.log(response);
-  document.getElementById('output-json').textContent = JSON.stringify(
-    response,
-    null,
-    2
-  );
 
   if (!response.addResults[0].success) {
     // stop early if adding a new feature was not successful
     return;
+  } else {
+    resetApp()
+
+    modalEl.style.display = "flex"
+    modalMap = new L.map("modal-map", {
+      center: [0, 0],
+      zoom: 1
+    })
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(modalMap)
+
+    let addedFeatureLayer = L.esri.featureLayer({
+      url: "https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Greenway_Closures_Creator_Demo_Ongoing_Closures_View/FeatureServer/0",
+      where: `OBJECTID=${response.addResults[0].objectId}`
+    }).addTo(modalMap)
+
+    addedFeatureLayer.once("load", e => {
+      let addedFeatureLayerBounds = L.latLngBounds([])
+      let addedFeatureAttributes;
+      addedFeatureLayer.eachFeature(layer => {
+        let addedFeatureBounds = layer.getBounds()
+        addedFeatureLayerBounds.extend(addedFeatureBounds)
+        
+        addedFeatureAttributes = layer.feature.properties
+      })
+      
+      console.log(addedFeatureAttributes)
+      let closureModalInfoListHTML = "<ul>";
+      if (addedFeatureAttributes.closure_title) closureModalInfoListHTML+=`<li><b>Title:</b> ${addedFeatureAttributes.closure_title}</li>`
+      if (addedFeatureAttributes.gwstatus) closureModalInfoListHTML+=`<li><b>Status:</b> ${addedFeatureAttributes.gwstatus}</li>`
+      if (addedFeatureAttributes.closure_start_date && addedFeatureAttributes.closure_start_date > 0) closureModalInfoListHTML+=`<li><b>Start Date:</b> ${new Date(addedFeatureAttributes.closure_start_date).toLocaleDateString()}</li>`
+      if (addedFeatureAttributes.closure_estimated_end_date && addedFeatureAttributes.closure_estimated_end_date > 0) closureModalInfoListHTML+=`<li><b>End Date (estimated):</b> ${new Date(addedFeatureAttributes.closure_estimated_end_date).toLocaleDateString()}</li>`
+      if (addedFeatureAttributes.description) closureModalInfoListHTML+=`<li><b>Description:</b> ${addedFeatureAttributes.description}</li>`
+      closureModalInfoListHTML+=`</ul>`
+      
+      document.getElementById("modal-closure-data-list").innerHTML = closureModalInfoListHTML
+      modalMap.fitBounds(addedFeatureLayerBounds, {
+        padding: [5, 5],
+        maxZoom: 16
+      })
+    })
   }
+}
+
+function closurePopup(feature, layer) {
+  let featureProperties = feature.properties;
+  let title = featureProperties.closure_title;
+  let description = featureProperties.description;
+  let closureStartDate = new Date(featureProperties.closure_start_date).toLocaleDateString()
+  let estClosureEndDate = new Date(featureProperties.closure_estimated_end_date).toLocaleDateString()
+  
+  let popupHtml = `
+  <h1 style="font-size:1rem;">${title}</h1>
+  <b>Closure Start:</b> ${closureStartDate}
+  <br>
+  <b>Estimated End:</b> ${estClosureEndDate}
+  <br>
+  <b>Description</b>
+  <br>
+  ${description}
+  `
+  layer.bindPopup(popupHtml)
 }
 
 function allNonNullFieldsPopup(feature, layer) {
@@ -394,3 +422,41 @@ function allNonNullFieldsPopup(feature, layer) {
   }
   layer.bindPopup(popupHtml);
 }
+function dateRangeTest(startDate, endDate) {
+  if (startDate > endDate) {
+    alert("Start date must be before end date")
+    throw "Start date must be before end date"
+  }
+}
+
+function resetApp() {
+  drawnItems.clearLayers();
+  clippedResultLayer.clearLayers();
+  closureTitleEl.value = null;
+  closureDescriptionEl.value = null;
+  closureStartDateEl.value = null;
+  closureEstimatedEndDateEl.value = null;
+  // outputJSONEl.textContent = '';
+  clippedResultSingleFeature = undefined;
+  document.getElementsByClassName("sidebar")[0].scrollTo({
+    top: 0,
+    behavior: "smooth"
+  })
+}
+
+const modalButton = document.getElementById("modal-btn")
+const modalEl = document.getElementById("success-modal")
+var closeEl = document.getElementsByClassName("close")[0]
+let modalMap
+
+window.onclick = function(event) {
+  if (event.target == modalEl) {
+    modalMap.remove()
+    modalEl.style.display = "none";
+  }
+}
+closeEl.onclick = function() {
+  modalMap.remove();
+  modalEl.style.display = "none";
+}
+

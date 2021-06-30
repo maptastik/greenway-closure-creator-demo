@@ -140,33 +140,24 @@
             </p>
           </fieldset>
         </form>
-        <div id="apply-attributes-container" class="centered-button-container">
-          <button id="apply-attributes-button" class="big-button">
-              Apply Attributes to Clipped Area
-            </button>
-        </div>
       </section>
       <section>
-        <h1>3. Add Closure</h1>
+        <h1>3. Submit Closure</h1>
         <div class="centered-button-container">
           <button id="add-closure-button" class="big-button">Submit</button>
         </div>
       </section>
-      <section id="reset-section">
-        <h1>Start Over</h1>
-        <div class="centered-button-container">
-          <button id="reset-button" class="big-button">Reset All</button>
-        </div>
-        <div class="centered-button-container">
-          <button id="scroll-top-button" class="big-button">Back to Top</button>
-        </div>
-      </section>
-      <section id="output-area">
-        <h1>Output</h1>
-        <div id="output">
-          <pre id="output-json"></pre>
-        </div>
-      </section>
+    </div>
+  </div>
+  <div id="success-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="modal-map"></div>
+      <div id="modal-closure-info">
+        <h1>Success!</h1>
+        <p>You have successfully added a closure to the Greenway Closure database.</p>
+        <div id="modal-closure-data-list"></div>
+      </div>
     </div>
   </div>
 </body>
