@@ -208,21 +208,15 @@ map.on(L.Draw.Event.CREATED, e => {
     dashArray: '5 5'
   });
   drawnItems.addLayer(layer);
+  processClip();
+    
 });
-map.on(L.Draw.Event.DELETED, e => {
-  clippedResultLayer.clearLayers();
-  drawnItems.clearLayers();
-  // outputJSONEl.textContent = '';
-});
+map.on(L.Draw.Event.EDITVERTEX, e => {
+  processClip();
+})
 
-// Clip result
-const clippedResultLayer = new L.FeatureGroup();
-map.addLayer(clippedResultLayer);
 
-// FUNCTIONALITY: Clip Features
-const clipButton = document.getElementById('clip-button');
-let clippedResultSingleFeature;
-clipButton.addEventListener('click', () => {
+function processClip() {
   // Clear the previous result
   clippedResultLayer.clearLayers();
 
@@ -249,8 +243,17 @@ clipButton.addEventListener('click', () => {
   });
   clippedResultLayer.addLayer(clippedResultSingleFeatureLayer);
   map.fitBounds(clippedResultLayer.getBounds())
+}
+
+map.on(L.Draw.Event.DELETED, e => {
+  clippedResultLayer.clearLayers();
+  drawnItems.clearLayers();
+  // outputJSONEl.textContent = '';
 });
 
+// Clip result
+const clippedResultLayer = new L.FeatureGroup();
+map.addLayer(clippedResultLayer);
 
 // FUNCTIONALITY: Add Closure to data
 const greenwayClosuresServiceLayerUrl =
