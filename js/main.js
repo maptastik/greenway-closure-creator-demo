@@ -29,12 +29,19 @@ if (serializedSession !== null && serializedSession !== undefined) {
 }
 
 function updateSessionInfo(session) {
+  let signInButton = document.getElementById('withPopupButton');
   let sessionInfo = document.getElementById('sessionInfo');
+  let signOutButton = document.getElementById("signOutButton")
 
   if (session) {
+    signInButton.style.display = "none"
+    signOutButton.style.display = "block"
+    console.log(session)
     sessionInfo.innerHTML = 'Logged in as ' + session.username;
     localStorage.setItem('__ARCGIS_REST_USER_SESSION__', session.serialize());
   } else {
+    signInButton.style.display = "block"
+    signOutButton.style.display = "none"
     sessionInfo.innerHTML = 'Log in to start a session.';
   }
 }

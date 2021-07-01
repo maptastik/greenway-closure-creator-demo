@@ -60,7 +60,16 @@ body {
   align-items: center;
   font-size: 0.5rem;
 }
-
+.auth-button {
+  height: 100%;
+  background-color: #1a5174;
+  border-width: 0;
+  border-radius: 5px;
+  margin-left: 10px;
+  color: #E0EFF4;
+  font-weight: bold;
+  font-family: var(--main-font-family)
+}
 .map {
   grid-area: map;
 }

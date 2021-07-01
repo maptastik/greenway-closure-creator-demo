@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <title>Greenway Closure Createor - City of Raleigh, PRCR</title>
   <!-- Stylesheets -->
   <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.3.3/dist/leaflet.css" />
   <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
@@ -30,39 +30,20 @@
 
   <div class="grid-container">
     <div id="header">
+      <!-- PAGE TITLE -->
       <div id="title-container">
         <div id="title-text">Greenway Closure Creator</div>
       </div>
+      <!-- AUTH -->
       <div id="auth-container">
-        <!-- <div>abc@xyz.com</div> -->
+        <span id="sessionInfo"></span>
+        <button id='withPopupButton' class="auth-button">Sign In</button>
+        <button id='signOutButton' class="auth-button">Sign Out</button>
       </div>
     </div>
     <div id="map" class="map"></div>
 
     <div class="sidebar">
-
-      <!-- AUTH -->
-      <section id="authentication-section">
-        <h1>Authentication</h1>
-        <div class="button-container">
-          <button id='withPopupButton'>Sign In</button>
-          <button id='signOutButton'>Sign Out</button>
-        </div>
-        <div class="container">
-          <div>
-            <p id="sessionInfo" class="info-panel">
-              <!-- Information will be injected here. -->
-            </p>
-          </div>
-        </div>
-
-
-        <div class="row">
-          <div class="text-center">
-            <!-- Event listeners will be added to these buttons. -->
-          </div>
-        </div>
-      </section>
       <!-- CONTROLS  -->
       <section id="controls">
         <h1>1. Clip</h1>
