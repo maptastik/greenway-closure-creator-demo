@@ -88,6 +88,7 @@ const basemap = L.tileLayer.provider('CartoDB.Positron').addTo(map);
 // Feature Layer Panes
 map.createPane('greenwayTrails');
 map.createPane('ongoingClosures');
+map.createPane("drawnClosure");
 map.createPane('mileMarkers');
 
 // Existing Greenway Trails
@@ -209,6 +210,7 @@ map.on(L.Draw.Event.CREATED, e => {
   });
   drawnItems.addLayer(layer);
   processClip();
+  map.fitBounds(clippedResultLayer.getBounds())
     
 });
 map.on(L.Draw.Event.EDITVERTEX, e => {
@@ -238,11 +240,13 @@ function processClip() {
   // Add result to map
   let clippedResultSingleFeatureLayer = L.geoJSON(clippedResultSingleFeature, {
     style: {
-      color: '#00BCD4'
-    }
+      color: "#00C853",
+      weight: 6
+    },
+    pane: "drawnClosure"
   });
   clippedResultLayer.addLayer(clippedResultSingleFeatureLayer);
-  map.fitBounds(clippedResultLayer.getBounds())
+  
 }
 
 map.on(L.Draw.Event.DELETED, e => {
