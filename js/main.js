@@ -429,8 +429,8 @@ function allNonNullFieldsPopup(feature, layer) {
 }
 function dateRangeTest(startDate, endDate) {
   if (startDate > endDate) {
-    alert("Start date must be before end date")
-    throw "Start date must be before end date"
+    alert("Start date must be on or before end date")
+    throw "Start date must be on or before end date"
   }
 }
 
