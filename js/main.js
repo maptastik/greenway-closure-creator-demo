@@ -204,9 +204,10 @@ map.on(L.Draw.Event.DRAWSTART, e => {
 map.on(L.Draw.Event.CREATED, e => {  
   let layer = e.layer;
   layer.setStyle({
-    color: '#121212',
-    weight: 1,
-    dashArray: '5 5'
+    color: "#01426A",
+    fillColor: "#E0EEF4",
+    fillOpacity: 0.5,
+    weight: 2
   });
   drawnItems.addLayer(layer);
   processClip();
@@ -240,7 +241,7 @@ function processClip() {
   // Add result to map
   let clippedResultSingleFeatureLayer = L.geoJSON(clippedResultSingleFeature, {
     style: {
-      color: "#00C853",
+      color: "#046A38",
       weight: 6
     },
     pane: "drawnClosure"
