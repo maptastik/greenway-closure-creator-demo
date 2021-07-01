@@ -353,7 +353,12 @@ function handleAdded(response) {
     modalEl.style.display = "flex"
     modalMap = new L.map("modal-map", {
       center: [0, 0],
-      zoom: 1
+      zoom: 1,
+      zoomControl: false,
+      scrollWheelZoom: false,
+      touchZoom: false,
+      dragging: false,
+      keyboard: false
     })
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -385,8 +390,8 @@ function handleAdded(response) {
       
       document.getElementById("modal-closure-data-list").innerHTML = closureModalInfoListHTML
       modalMap.fitBounds(addedFeatureLayerBounds, {
-        padding: [5, 5],
-        maxZoom: 16
+        padding: [25, 25],
+        maxZoom: 15
       })
     })
   }
